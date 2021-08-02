@@ -8,7 +8,9 @@
         <table class="table table-bordered">
             {% for trailer in trailers %}
                 <tr>
-                    <td>{{ trailer.title }}</td>
+                    <td>{{ trailer.id }}</td>
+                    <td><a href="/movie/{{ trailer.id }}">{{ trailer.title }}</a></td>
+                    <td>{{ trailer.pub_date |date('Y-m-d h:m:s')}}</td>
                 </tr>
             {% endfor %}
         </table>

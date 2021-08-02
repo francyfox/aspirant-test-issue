@@ -12,7 +12,7 @@ use Slim\Exception\HttpBadRequestException;
 use Slim\Interfaces\RouteCollectorInterface;
 use Twig\Environment;
 
-class HomeController
+class MovieController
 {
     public function __construct(
         private RouteCollectorInterface $routeCollector,
@@ -20,11 +20,13 @@ class HomeController
         private EntityManagerInterface $em
     ) {}
 
-    public function index(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
+    public function index(ServerRequestInterface $request, ResponseInterface $response, $id) : ResponseInterface
     {
         try {
-            $data = $this->twig->render('home/index.html.twig', [
-                'trailers' => $this->fetchData(),
+            $movie = $this->em->getRepository(Movie::class)
+                ->find($id);
+            $data = $this->twig->render('movie/index.html.twig', [
+                'trailer' => $movie,
             ]);
         } catch (\Exception $e) {
             throw new HttpBadRequestException($request, $e->getMessage(), $e);
@@ -33,13 +35,5 @@ class HomeController
         $response->getBody()->write($data);
 
         return $response;
-    }
-
-    protected function fetchData(): Collection
-    {
-        $data = $this->em->getRepository(Movie::class)
-            ->findAll();
-
-        return new ArrayCollection($data);
     }
 }
