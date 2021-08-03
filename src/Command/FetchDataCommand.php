@@ -4,8 +4,6 @@ namespace App\Command;
 
 use App\Entity\Movie;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Psr7\Request;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -18,12 +16,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class FetchDataCommand extends Command
 {
     private const SOURCE = 'https://trailers.apple.com/trailers/home/rss/newtrailers.rss';
-
     protected static $defaultName = 'fetch:trailers';
+    private const COUNT = 10; // argument
 
     private ClientInterface $httpClient;
     private LoggerInterface $logger;
-    private string $source;
     private EntityManagerInterface $doctrine;
 
     /**
@@ -47,12 +44,17 @@ class FetchDataCommand extends Command
         $this
             ->setDescription('Fetch data from iTunes Movie Trailers')
             ->addArgument('source', InputArgument::OPTIONAL, 'Overwrite source')
+            ->addArgument('count', InputArgument::OPTIONAL, 'Get a definite amount rss children')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->logger->info(sprintf('Start %s at %s', __CLASS__, (string) date_create()->format(DATE_ATOM)));
+        $this->logger->info(sprintf(
+            'Start %s at %s',
+            __CLASS__,
+            (string) date_create()->format(DATE_ATOM)
+        ));
         $source = self::SOURCE;
         if ($input->getArgument('source')) {
             $source = $input->getArgument('source');
@@ -62,44 +64,49 @@ class FetchDataCommand extends Command
             throw new RuntimeException('Source must be string');
         }
         $io = new SymfonyStyle($input, $output);
-        $io->title(sprintf('Fetch data from %s', $source));
+        $io->title(sprintf('Fetch data with parameter %s', strval($source)));
 
-        try {
-            $response = $this->httpClient->sendRequest(new Request('GET', $source));
-        } catch (ClientExceptionInterface $e) {
-            throw new RuntimeException($e->getMessage());
+        libxml_use_internal_errors(true);
+        $xml = simplexml_load_file($source, 'SimpleXMLElement', LIBXML_NOWARNING);
+
+        if (false === $xml) {
+            $io->title('XML load ERROR');
+            foreach (libxml_get_errors() as $error) {
+                $this->logger->critical($error->message);
+            }
         }
-        if (($status = $response->getStatusCode()) !== 200) {
-            throw new RuntimeException(sprintf('Response status is %d, expected %d', $status, 200));
-        }
-        $data = $response->getBody()->getContents();
-        $this->processXml($data);
+        $this->processXml($xml);
 
         $this->logger->info(sprintf('End %s at %s', __CLASS__, (string) date_create()->format(DATE_ATOM)));
 
         return 0;
     }
 
-    protected function processXml(string $data): void
+    protected function processXml(\SimpleXMLElement $data): void
     {
-        $xml = (new \SimpleXMLElement($data))->children();
-//        $namespace = $xml->getNamespaces(true)['content'];
-//        dd((string) $xml->channel->item[0]->children($namespace)->encoded);
+        $i = 1;
+        $count = self::COUNT;
+        $xml = $data->children();
 
         if (!property_exists($xml, 'channel')) {
             throw new RuntimeException('Could not find \'channel\' element in feed');
         }
         foreach ($xml->channel->item as $item) {
-            $trailer = $this->getMovie((string) $item->title)
-                ->setTitle((string) $item->title)
-                ->setDescription((string) $item->description)
-                ->setLink((string) $item->link)
-                ->setPubDate($this->parseDate((string) $item->pubDate))
-            ;
-
-            $this->doctrine->persist($trailer);
+            if ($this->checkDuplicate((string) $item->title)) {
+                $trailer = new Movie;
+                $trailer
+                    ->setTitle((string) $item->title)
+                    ->setDescription((string) $item->description)
+                    ->setLink((string) $item->link)
+                    ->setPubDate($this->parseDate((string) $item->pubDate))
+                ;
+                $this->doctrine->persist($trailer);
+            }
+            if ($i === $count) {
+                break;
+            }
+            ++$i;
         }
-
         $this->doctrine->flush();
     }
 
@@ -108,21 +115,18 @@ class FetchDataCommand extends Command
         return new \DateTime($date);
     }
 
-    protected function getMovie(string $title): Movie
+    protected function checkDuplicate(string $title): bool
     {
         $item = $this->doctrine->getRepository(Movie::class)->findOneBy(['title' => $title]);
 
         if ($item === null) {
             $this->logger->info('Create new Movie', ['title' => $title]);
-            $item = new Movie();
         } else {
             $this->logger->info('Move found', ['title' => $title]);
+
+            return false;
         }
 
-        if (!($item instanceof Movie)) {
-            throw new RuntimeException('Wrong type!');
-        }
-
-        return $item;
+        return true;
     }
 }

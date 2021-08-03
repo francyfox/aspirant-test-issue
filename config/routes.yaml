@@ -8,5 +8,3 @@ movie:
   path: 'movie/{id}'
   controller: App\Controller\MovieController
   action: index
-
-
