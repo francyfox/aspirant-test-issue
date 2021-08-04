@@ -13,6 +13,7 @@
   "require": {
     "php": ">=8.0",
     "ext-json": "*",
+    "ext-libxml": "*",
     "ext-simplexml": "*",
     "doctrine/orm": "^2.7",
     "monolog/monolog": "^1.25",

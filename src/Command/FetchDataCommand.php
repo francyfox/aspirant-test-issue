@@ -17,7 +17,7 @@ class FetchDataCommand extends Command
 {
     private const SOURCE = 'https://trailers.apple.com/trailers/home/rss/newtrailers.rss';
     protected static $defaultName = 'fetch:trailers';
-    private const COUNT = 10; // argument
+    private const COUNT = 10; // get only 10 children
 
     private ClientInterface $httpClient;
     private LoggerInterface $logger;
@@ -44,7 +44,6 @@ class FetchDataCommand extends Command
         $this
             ->setDescription('Fetch data from iTunes Movie Trailers')
             ->addArgument('source', InputArgument::OPTIONAL, 'Overwrite source')
-            ->addArgument('count', InputArgument::OPTIONAL, 'Get a definite amount rss children')
         ;
     }
 
@@ -67,7 +66,7 @@ class FetchDataCommand extends Command
         $io->title(sprintf('Fetch data with parameter %s', strval($source)));
 
         libxml_use_internal_errors(true);
-        $xml = simplexml_load_file($source, 'SimpleXMLElement', LIBXML_NOWARNING);
+        $xml = simplexml_load_file($source, 'SimpleXMLElement', LIBXML_NOCDATA);
 
         if (false === $xml) {
             $io->title('XML load ERROR');
@@ -79,7 +78,7 @@ class FetchDataCommand extends Command
 
         $this->logger->info(sprintf('End %s at %s', __CLASS__, (string) date_create()->format(DATE_ATOM)));
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     protected function processXml(\SimpleXMLElement $data): void
@@ -87,10 +86,10 @@ class FetchDataCommand extends Command
         $i = 1;
         $count = self::COUNT;
         $xml = $data->children();
-
         if (!property_exists($xml, 'channel')) {
             throw new RuntimeException('Could not find \'channel\' element in feed');
         }
+
         foreach ($xml->channel->item as $item) {
             if ($this->checkDuplicate((string) $item->title)) {
                 $trailer = new Movie;
@@ -99,6 +98,7 @@ class FetchDataCommand extends Command
                     ->setDescription((string) $item->description)
                     ->setLink((string) $item->link)
                     ->setPubDate($this->parseDate((string) $item->pubDate))
+                    ->setImage($this->getImageFromXml($item))
                 ;
                 $this->doctrine->persist($trailer);
             }
@@ -108,6 +108,14 @@ class FetchDataCommand extends Command
             ++$i;
         }
         $this->doctrine->flush();
+    }
+
+    protected function getImageFromXml(\SimpleXMLElement $element): string | null
+    {
+        $str = (string) $element->children('content', true);
+        $imageUrl = preg_match('@src="([^"]+)"@', $str, $match);
+        $cut = ['src="', '"'];
+        return str_replace($cut, '', $match[1]);
     }
 
     protected function parseDate(string $date): \DateTime

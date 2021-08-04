@@ -8,3 +8,16 @@ movie:
   path: 'movie/{id}'
   controller: App\Controller\MovieController
   action: index
+#middlewares:
+#  user:
+#    register:
+#      method: 'get'
+#      path: 'user/reg'
+#      controller: App\Controller\RegistrationController
+#      action: index
+#    auth:
+#      method: 'get'
+#      path: 'user/auth'
+#      controller: App\Controller\RegistrationController
+#      action: index
+

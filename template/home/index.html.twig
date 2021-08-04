@@ -7,7 +7,7 @@
         <h1 class="mt-5 mb-4">{{ trailers | length }} iTunes Movie trailers</h1>
         <div class="row">
             {% for trailer in trailers %}
-                <div class="card col-sm-3 m-2" style="width: 18rem;">
+                <div class="card col-sm-2 m-2" style="width: 18rem;">
                     {% if (trailer.image) %}
                         <img src="{{ trailer.image }}" class="mt-3 img-fluid rounded-start" alt="...">
                     {% else %}
@@ -19,7 +19,7 @@
                         </svg>
                     {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title"><a href="/movie/{{ trailer.id }}">{{ trailer.id }}. {{ trailer.title }}</a></h5>
+                        <h5 class="card-title"><a href="/movie/{{ trailer.id }}">{{ trailer.title }}</a></h5>
                     </div>
                 </div>
             {% endfor %}

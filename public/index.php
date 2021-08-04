@@ -25,6 +25,7 @@ $app = new App(
     $container->get(RouteResolverInterface::class)
 );
 
+$app->addErrorMiddleware(true, true, true);
 $app->add($container->get(RoutingMiddleware::class));
 $app->add($container->get(ErrorMiddleware::class));
 
