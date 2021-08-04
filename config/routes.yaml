@@ -1,23 +1,21 @@
 main:
-  method: 'get'
+  method: 'GET'
   path: ~
   controller: App\Controller\HomeController
   action: index
 movie:
-  method: 'get'
+  method: 'GET'
   path: 'movie/{id}'
   controller: App\Controller\MovieController
   action: index
-#middlewares:
-#  user:
-#    register:
-#      method: 'get'
-#      path: 'user/reg'
-#      controller: App\Controller\RegistrationController
-#      action: index
-#    auth:
-#      method: 'get'
-#      path: 'user/auth'
-#      controller: App\Controller\RegistrationController
-#      action: index
+register:
+  method: 'GET'
+  path: 'user/reg'
+  controller: App\Controller\RegistrationController
+  action: index
+auth:
+  method: ['GET', 'POST']
+  path: 'user/auth'
+  controller: App\Controller\AuthController
+  action: index
 
