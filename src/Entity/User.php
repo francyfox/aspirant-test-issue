@@ -31,8 +31,8 @@ class User
     private string $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Movie", cascade={"persist", "remove"}, orphanRemoval=true)
-     * @ORM\JoinTable(name="likes",
+     * @ORM\ManyToMany(targetEntity="App\Entity\Movie", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="favorites",
      *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="movie_id", referencedColumnName="id")}
      *      )
@@ -44,10 +44,7 @@ class User
         $this->my_likes = new ArrayCollection();
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getMyLikes(): ArrayCollection
+    public function getMyLikes()
     {
         return $this->my_likes;
     }
@@ -57,7 +54,7 @@ class User
      *
      * @param Movie $movie
      */
-    public function addMyLike(Movie $movie): void
+    public function addMyLike(Movie $movie)
     {
         $this->my_likes->add($movie);
     }

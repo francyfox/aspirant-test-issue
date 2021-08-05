@@ -20,9 +20,15 @@ class HomeController extends BaseController
             if ($postData['u_id']) {
                 $this->setLikes($postData);
             }
+            $favorites = [];
+            if (isset($_SESSION['user'])) {
+                $favorites = $this->getFavorites($_SESSION['user']['id']);
+            }
+
             $data = $this->twig->render('home/index.html.twig', [
                 'user' => $_SESSION['user'],
                 'trailers' => $this->fetchData(),
+                'favorites' => $favorites,
             ]);
         } catch (\Exception $e) {
             throw new HttpBadRequestException($request, $e->getMessage(), $e);
@@ -39,9 +45,11 @@ class HomeController extends BaseController
     protected function setLikes($postData)
     {
         $user = $this->em->getRepository(User::class)->find(intval($postData['u_id']));
-        $movie = $this->em->getReference(Movie::class, intval($postData['t_id']));
+        $movie = $this->em->getRepository(Movie::class)->find(intval($postData['t_id']));
+        $movie->setLikes();
         $user->addMyLike($movie);
         $this->em->persist($user);
+        $this->em->persist($movie);
         $this->em->flush();
     }
 
@@ -51,5 +59,10 @@ class HomeController extends BaseController
             ->findAll();
 
         return new ArrayCollection($data);
+    }
+
+    protected function getFavorites($id): array
+    {
+        return $this->em->getRepository(User::class)->find($id)->getMyLikes()->getValues();
     }
 }

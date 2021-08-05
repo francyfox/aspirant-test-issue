@@ -5,9 +5,9 @@
 {% block content %}
     <div class="container mb-5">
         {% include 'menu.html.twig' %}
-        <h1 class="mt-5 mb-4">{{ trailers | length }} iTunes Movie trailers</h1>
+        <h1 class="mt-5 mb-4">{{ favorites | length }} My favorite trailers</h1>
         <div class="row">
-            {% for trailer in trailers %}
+            {% for trailer in favorites %}
                 <div class="card col-sm-2 m-2" style="width: 18rem;">
                     {% if (trailer.image) %}
                         <img src="{{ trailer.image }}" class="mt-3 img-fluid rounded-start" alt="...">
@@ -22,13 +22,6 @@
                     <div class="card-body">
                         <h5 class="card-title"><a href="/movie/{{ trailer.id }}">{{ trailer.title }}</a></h5>
                     </div>
-                    {% if user %}
-                    <form action="/" method="post" class="form-horizontal d-flex justify-content-center">
-                        <input type="text" name="t_id" value="{{ trailer.id }}" class="d-none">
-                        <input type="text" name="u_id" value="{{ user.id }}" class="d-none">
-                        <button type="submit" class="btn btn-outline-primary mb-3">LIKE {{ trailer.likes }}</button>
-                    </form>
-                    {% endif %}
                 </div>
             {% endfor %}
         </div>

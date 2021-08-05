@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping\Index;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MoviesRepository")
- * @ORM\Table(name="movies", indexes={@Index(columns={"title"})})
+ * @ORM\Table(name="movie", indexes={@Index(columns={"title"})})
  */
 class Movie
 {
@@ -43,6 +43,26 @@ class Movie
      */
     private ?string $image;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private ?int $likes;
+
+    /**
+     * @return int
+     */
+    public function getLikes(): int
+    {
+        return $this->likes;
+    }
+
+    /**
+     * @param int $likes
+     */
+    public function setLikes(): void
+    {
+        ++$this->likes;
+    }
 
     public function getImage(): ?string
     {

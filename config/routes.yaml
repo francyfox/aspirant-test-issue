@@ -18,4 +18,9 @@ auth:
   path: 'user/auth'
   controller: App\Controller\AuthController
   action: index
+favorites:
+  method: 'GET'
+  path: 'user/{id}/favorites'
+  controller: App\Controller\FavoritesController
+  action: index
 
