@@ -1,5 +1,5 @@
 main:
-  method: 'GET'
+  method: ['GET', 'POST']
   path: ~
   controller: App\Controller\HomeController
   action: index
@@ -9,7 +9,7 @@ movie:
   controller: App\Controller\MovieController
   action: index
 register:
-  method: 'GET'
+  method: ['GET', 'POST']
   path: 'user/reg'
   controller: App\Controller\RegistrationController
   action: index

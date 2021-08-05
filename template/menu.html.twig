@@ -1,0 +1,12 @@
+{% block content %}
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a href="/" class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Home</a>
+            <a href="/user/auth" class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Auth</a>
+            <a href="/user/reg" class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Registration</a>
+            {% if user %}
+                <li class="d-flex nav-link disabled" style="margin-left: auto;">welcome home {{ user.username }}</li>
+            {% endif %}
+        </div>
+    </nav>
+{% endblock %}

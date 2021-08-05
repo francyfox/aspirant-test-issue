@@ -16,6 +16,7 @@ $container = require dirname(__DIR__) . '/bootstrap.php';
 $request = ServerRequestFactory::createFromGlobals();
 
 Slim\Factory\AppFactory::create();
+session_start();
 
 $app = new App(
     $container->get(ResponseFactoryInterface::class),

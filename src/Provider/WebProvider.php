@@ -3,8 +3,6 @@
 namespace App\Provider;
 
 use App\Container\Container;
-use App\Controller\HomeController;
-use App\Controller\MovieController;
 use App\Support\Config;
 use App\Support\ServiceProviderInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,7 +22,6 @@ class WebProvider implements ServiceProviderInterface
 
     protected function defineControllerDi(Container $container): void
     {
-
         foreach ($this->getRoutes($container) as $route) {
             if ($route['controller'] !== null) {
                 $container->set($route['controller'], static function (ContainerInterface $container) use ($route) {
@@ -34,7 +31,6 @@ class WebProvider implements ServiceProviderInterface
                         $container->get(EntityManagerInterface::class));
                 });
             }
-
         }
     }
 
@@ -49,7 +45,7 @@ class WebProvider implements ServiceProviderInterface
                     $router->{$routeConfig['method']}($routeConfig['path'] ?? '', $routeConfig['controller'] . ':' . $routeConfig['action'])
                         ->setName($routeName);
                 } else {
-                    foreach($routeConfig['method'] as $method) {
+                    foreach ($routeConfig['method'] as $method) {
                         $router->{$method}($routeConfig['path'] ?? '', $routeConfig['controller'] . ':' . $routeConfig['action'])
                             ->setName($routeName);
                     }
