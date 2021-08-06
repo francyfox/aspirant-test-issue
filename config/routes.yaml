@@ -18,6 +18,11 @@ auth:
   path: 'user/auth'
   controller: App\Controller\AuthController
   action: index
+logout:
+  method: 'GET'
+  path: 'user/logout'
+  controller: App\Controller\AuthController
+  action: logout
 favorites:
   method: 'GET'
   path: 'user/{id}/favorites'

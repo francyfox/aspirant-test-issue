@@ -36,7 +36,7 @@ class HomeController extends BaseController
             });
             $this->twig->addFunction($function_is_favourite);
             $data = $this->twig->render('home/index.html.twig', [
-                'user' => $_SESSION['user'],
+                'user' => $_SESSION['user'] ?? [],
                 'trailers' => $this->fetchData(),
                 'favorites' => $favorites,
             ]);

@@ -50,4 +50,10 @@ class AuthController extends BaseController
         }
         return false;
     }
+
+    public function logout(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        session_destroy();
+        return $response->withStatus(302)->withHeader('Location', '/');
+    }
 }
