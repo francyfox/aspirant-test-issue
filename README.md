@@ -5,7 +5,7 @@ iTunes Movie trailers
 --------------
 1) Для запуска docker измените в env и docker-compose.yaml параметры msql (в докерфайле нету запуска сервера)
 2) Для локального dev сервера комманда php bin/console server:start
-3) База данных
+3) Комманды база данных
     - php bin/console orm:schema-tool:create
     - php bin/console orm:schema-tool:update --force
     - php bin/console orm:clear-cache:metadata

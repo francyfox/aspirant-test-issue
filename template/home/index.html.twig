@@ -26,7 +26,16 @@
                     <form action="/" method="post" class="form-horizontal d-flex justify-content-center">
                         <input type="text" name="t_id" value="{{ trailer.id }}" class="d-none">
                         <input type="text" name="u_id" value="{{ user.id }}" class="d-none">
-                        <button type="submit" class="btn btn-outline-primary mb-3">LIKE {{ trailer.likes }}</button>
+                        <script>console.log({{ isFavourite(favorites, trailer.id) }})</script>
+                        {% if isFavourite(favorites, trailer.id) %}
+                            <button type="submit" class="btn btn-outline-primary mb-3 active">
+                                DISLIKE {{ trailer.likes }}
+                            </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-outline-primary mb-3">
+                                    LIKE {{ trailer.likes }}
+                                </button>
+                        {% endif %}
                     </form>
                     {% endif %}
                 </div>

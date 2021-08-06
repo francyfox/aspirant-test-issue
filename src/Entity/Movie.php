@@ -46,7 +46,12 @@ class Movie
     /**
      * @ORM\Column(type="integer")
      */
-    private ?int $likes;
+    private int $likes;
+
+    public function __construct()
+    {
+        $this->likes = 0;
+    }
 
     /**
      * @return int
@@ -62,6 +67,16 @@ class Movie
     public function setLikes(): void
     {
         ++$this->likes;
+    }
+
+    /**
+     * @param int $likes
+     */
+    public function disLikes(): void
+    {
+        if ($this->likes !== 0) {
+            --$this->likes;
+        }
     }
 
     public function getImage(): ?string

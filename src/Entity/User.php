@@ -59,6 +59,16 @@ class User
         $this->my_likes->add($movie);
     }
 
+    /**
+     * Remove like.
+     *
+     * @param Movie $movie
+     */
+    public function removeMyLike(Movie $movie)
+    {
+        $this->my_likes->removeElement($movie);
+    }
+
     public function getId(): ?int
     {
         return $this->id;

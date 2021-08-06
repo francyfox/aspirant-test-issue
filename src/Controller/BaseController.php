@@ -12,5 +12,6 @@ class BaseController
         protected RouteCollectorInterface $routeCollector,
         protected Environment $twig,
         protected EntityManagerInterface $em
-    ) {}
+    ) {
+    }
 }
